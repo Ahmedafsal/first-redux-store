@@ -57,3 +57,13 @@ const accounting = (totalMoney = 100, action) => {
 
 
 //--Redux store--
+console.log(Redux) // check the library we added in htl file it reurns an object
+const { createStore, combineReducers } = Redux;
+
+const railwayCentralStore = combineReducers({
+    accounting: accounting,
+    reservationHistory: reservationHistory,
+    cancelationHistory: cancelationHistory
+});
+
+const store = createStore(railwayCentralStore);
