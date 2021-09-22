@@ -5,8 +5,8 @@ const newBooking = (name, amount) => {
         type: "NEW_BOOKING",
         payload: {
             name,
-            amount
-        }
+            amount,
+        },
     };
 };
 
@@ -15,19 +15,19 @@ const cancelBooking = (name, refundAmount) => {
         type: "CANCEL_BOOKING",
         payload: {
             name,
-            refundAmount
-        }
+            refundAmount,
+        },
     };
 };
 
 //--Reducers--
 
-const reservationHistory = (oldReservationList=[], action) => {
+const reservationHistory = (oldReservationList = [], action) => {
     if(action.type === "NEW_BOOKING") {
         return [...oldReservationList, action.payload] //you need to destructor the old list and aad new info , if you dont de structor old list entirely change
-    } else if (action.type === "CANCEL_BOOKING") {  /* checking free ticket space */
+    } else if (action.type === "CANCEL_BOOKING") {  
         return oldReservationList.filter(record => {
-            return record !== action.payload.name; // filter method retur array so we are not return array her, (not use bracket)
+            return record.name !== action.payload.name; // filter method retur array so we are not return array her, (not use bracket)
         });
     }
 
@@ -35,12 +35,12 @@ const reservationHistory = (oldReservationList=[], action) => {
 }
 
 //for cancel action
-const cancelationHistory = (oldCancelationList=[], action) => {
+const cancellationHistory = (oldCancellationList = [null], action) => {
     if(action.type === "CANCEL_BOOKING") {
-        return [...oldCancelationList, action.payload] //you need to destructor the old list and aad new info , if you dont de structor old list entirely change
+        return [...oldCancellationList, action.payload]; //you need to destructor the old list and aad new info , if you dont de structor old list entirely change
     } 
 
-    return cancelationHistory;
+    return oldCancellationList;
 }
 
 const accounting = (totalMoney = 100, action) => {
@@ -48,10 +48,10 @@ const accounting = (totalMoney = 100, action) => {
         return totalMoney + action.payload.amount;
     }
     if(action.type === "CANCEL_BOOKING") {
-        return totalMoney = action.payload.refundAmount;//you need to destructor the old list and aad new info , if you dont de structor old list entirely change
+        return totalMoney - action.payload.refundAmount;//you need to destructor the old list and aad new info , if you dont de structor old list entirely change
     } 
 
-    return accounting;
+    return totalMoney;
 }
 
 
@@ -63,7 +63,15 @@ const { createStore, combineReducers } = Redux;
 const railwayCentralStore = combineReducers({
     accounting: accounting,
     reservationHistory: reservationHistory,
-    cancelationHistory: cancelationHistory
+    cancellationHistory: cancellationHistory,
 });
 
 const store = createStore(railwayCentralStore);
+
+const action = newBooking("Afsal", 20); // action
+store.dispatch(action); // dipatch action
+store.dispatch(newBooking("Sam", 40));
+store.dispatch(newBooking("Abhi", 30));  
+store.dispatch(cancelBooking("Afsal", 10));  
+console.log(store.getState()); // getting data
+
